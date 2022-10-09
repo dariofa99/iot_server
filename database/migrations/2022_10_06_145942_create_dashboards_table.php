@@ -13,10 +13,9 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('topics', function (Blueprint $table) {
+        Schema::create('dashboards', function (Blueprint $table) {
             $table->id();
-            $table->string("topic_name");
-           // $table->string("value");
+            $table->string("dashboard_name");
            
             $table->timestamps();
         });
@@ -29,6 +28,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('topics');
+        Schema::dropIfExists('dashboards');
     }
 };

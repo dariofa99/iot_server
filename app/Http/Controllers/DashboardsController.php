@@ -2,26 +2,26 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Dashboard as MyDash;
 use \Facades\App\Facades\Mqtt;
 use App\Models\Topic;
 use \Facades\App\Facades\NewPush;
 use App\Models\User;
+use App\Services\DashboardService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Models\Dashboard;
-use App\Models\DashboardChartTopic;
-use App\Models\TopicValue;
-use App\Services\DashboardService;
-use Illuminate\Database\Eloquent\Builder;
 
-class TopicsController extends Controller
+class DashboardsController extends Controller
 {
 
     private $dashboardService;
     public function __construct(DashboardService $dashboardService)
-    {
-        $this->dashboardService = $dashboardService;
-    }
+  {
+    $this->dashboardService = $dashboardService;
+    
+  }
+
+
     /**
      * Display a listing of the resource.
      *
@@ -31,7 +31,7 @@ class TopicsController extends Controller
     {
 
 
-        $topics = Topic::orderBy('created_at', 'asc')->get();
+        $topics = MyDash::orderBy('created_at', 'asc')->get();
 
 
         return response()->json($topics);
@@ -45,44 +45,11 @@ class TopicsController extends Controller
      */
     public function store(Request $request)
     {
-
+       /* // return response()->json([$request->all()]);
         $date =  date('Y-m-d H:i:s');
-        $dashboard = Dashboard::where('token', request()->token)->first();
-        if ($dashboard) {
-            $dashboard_topics = DashboardChartTopic::with('topic')
-                ->whereHas('dashboard_chart', function (Builder $query) use ($dashboard) {
-                    $query->where('dashboard_id', $dashboard->id);
-                })
-                ->orderBy('created_at', 'asc')
-                ->get();
-
-            foreach ($dashboard_topics as $key => $dashboard_t) {
-                if ($request[$dashboard_t->topic->topic_name]) {
-                    $topic = TopicValue::create([
-                        'dashboard_chart_topic_id' => $dashboard_t->id,
-                        'value' => intval($request[$dashboard_t->topic->topic_name]),
-                        'date' => $date
-                    ]);
-                }
-            }
-
-            $dashboard = $this->dashboardService->getData($dashboard->id);
-            if(NewPush::isRedisReady()){
-                NewPush::channel("MyChannel")
-                ->message(["response" => $dashboard])
-                ->publish();
-            }
-           
-            return response()->json($dashboard, 200);
-        }
+        $request['date'] =  $date;
 
 
-
-
-
-
-
-        /* 
         if(is_array($request->topic_name)){
             if(is_array($request->value)){
                 foreach ($request->topic_name as $key => $topic) {
@@ -124,10 +91,10 @@ class TopicsController extends Controller
             }else{
                 return response()->json(["error"=>"Topic name or Value is not array"]);
             }
-        } */
-
-
-        return response()->json(["error" => "Value is not numeric"]);
+        }
+        */
+       
+        return response()->json(["error"=>"Value is not numeric"]);
     }
 
     /**
@@ -138,7 +105,8 @@ class TopicsController extends Controller
      */
     public function show($id)
     {
-        //
+        $dashboard = $this->dashboardService->getData($id);
+        return response()->json($dashboard,200);
     }
 
     /**
@@ -165,26 +133,12 @@ class TopicsController extends Controller
         return response()->json("mqtt");
     }
 
-    public function subscribe()
+    public function destroyAll()
     {
-        //return response()->json("hrlep", 200);
-       /*  DashboardChartTopic::create([
-            'color'=>"#ksjdjdj",
-            'dashboard_chart_id'=>9,'topic_id'=>2
-        ]); */
-        $topics = Mqtt::subscribe(function($topic){
-            echo "Hola".$topic;
-            DashboardChartTopic::create([
-                'color'=>"#ksjdjdj",
-                'dashboard_chart_id'=>9,'topic_id'=>2
-            ]);
-        });
-        
-        /* $topics->mqtt->subscribe("mgtic/luz", function ($topic, $message) {
-            printf("Received message on topic [%s]: %s\n", $topic, $message);
-        }, 0);
-        $this->mqtt->loop(true); */
-
+        $topics = DB::table('topics')->delete();
+        NewPush::channel("MyChannelDelete")
+            ->message(["response" => Topic::orderBy('created_at', 'desc')->get()])
+            ->publish();
         return response()->json($topics, 200);
     }
 }

@@ -13,11 +13,14 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('topics', function (Blueprint $table) {
+        Schema::create('topic_values', function (Blueprint $table) {
             $table->id();
-            $table->string("topic_name");
-           // $table->string("value");
-           
+            $table->string("value");
+            $table->dateTime("date");
+            $table->foreignId('dashboard_chart_topic_id')
+            ->constrained('dashboard_chart_topics')
+            ->onUpdate('cascade')
+            ->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -29,6 +32,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('topics');
+        Schema::dropIfExists('topic_values');
     }
 };

@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\DashboardChartsController;
+use App\Http\Controllers\DashboardChartTopicsController;
 use App\Http\Controllers\TopicsController;
 use App\Http\Controllers\UsersController;
 use Illuminate\Http\Request;
@@ -19,6 +21,12 @@ use Illuminate\Support\Facades\Route;
 Route::group(['prefix'=>'v1','namespace'=>'App\Http\Controllers'],function(){
     Route::get('users', [UsersController::class,'index']);
     Route::resource('topics', TopicsController::class);
+    Route::get('topics/delete/all', [TopicsController::class,'destroyAll']);
+    Route::get('topics/subscribe/topic', [TopicsController::class,'subscribe']);
+    Route::resource('dashboards', DashboardsController::class);
+    Route::resource('dashboard/charts', DashboardChartsController::class);
+    Route::post('dashboard/sync/topic', [DashboardChartTopicsController::class,'syncTopic']);
+    Route::apiResource('charts', ChartsController::class);
    
    // Route::get('unauthenticated', 'AuthController@refresh')->name('unauthenticated');
     

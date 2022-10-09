@@ -2,6 +2,9 @@
 
 namespace App\Providers;
 
+use App\Repositories\BaseRepository;
+use App\Repositories\DashboardRepository;
+use App\Services\DashboardService;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 
@@ -25,5 +28,10 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         Schema::defaultStringLength(191);
+        $this->app->bind(          
+           DashboardService::class,
+           DashboardRepository::class,
+           BaseRepository::class,
+        );
     }
 }

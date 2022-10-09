@@ -16,6 +16,19 @@ class NewPush
         $this->r_connection = Redis::connection();
     }
 
+    public function isRedisReady()
+    {
+        $isReady = true;
+        try {
+            $redis = $this->r_connection;
+            $redis->connect();
+            $redis->disconnect();
+        } catch (\Exception $e) {
+            $isReady = false;
+        }
+
+        return $isReady;
+    }
     public function channel($channel){
       $this->channel = $channel;
       return $this;

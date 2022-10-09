@@ -13,11 +13,17 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('topics', function (Blueprint $table) {
+        Schema::create('dashboard_charts', function (Blueprint $table) {
             $table->id();
-            $table->string("topic_name");
-           // $table->string("value");
-           
+            $table->string("cols");
+            $table->foreignId('chart_id')
+            ->constrained('charts')
+            ->onUpdate('cascade')
+            ->onDelete('cascade'); 
+            $table->foreignId('dashboard_id')
+            ->constrained('dashboards')
+            ->onUpdate('cascade')
+            ->onDelete('cascade'); 
             $table->timestamps();
         });
     }
@@ -29,6 +35,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('topics');
+        Schema::dropIfExists('dashboard_charts');
     }
 };

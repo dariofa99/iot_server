@@ -4,14 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Topic extends Model
+class Chart extends Model
 {
-    protected $table = 'topics';
+    protected $table = 'charts';
      
     protected $fillable = [
-        'topic_name',        
+        'chart_type'    
         
     ];
+
     protected $hidden = [
         'created_at',
         'updated_at',
