@@ -45,7 +45,7 @@ class TopicsController extends Controller
      */
     public function store(Request $request)
     {
-
+ //
         $date =  date('Y-m-d H:i:s');
         $dashboard = Dashboard::where('token', request()->token)->first();
         if ($dashboard) {
@@ -53,20 +53,27 @@ class TopicsController extends Controller
                 ->whereHas('dashboard_chart', function (Builder $query) use ($dashboard) {
                     $query->where('dashboard_id', $dashboard->id);
                 })
-                ->orderBy('created_at', 'asc')
-                ->get();
-
-            foreach ($dashboard_topics as $key => $dashboard_t) {
-                if ($request[$dashboard_t->topic->topic_name]) {
+                ->orderBy('created_at', 'asc')                
+               ->get();
+              foreach ($dashboard_topics as $key => $dashboard_t) {                
+                if ($request[$dashboard_t->topic->topic_name]) {                   
                     $topic = TopicValue::create([
                         'dashboard_chart_topic_id' => $dashboard_t->id,
                         'value' => intval($request[$dashboard_t->topic->topic_name]),
                         'date' => $date
                     ]);
+                    Mqtt::topic($dashboard_t->topic->topic_name)->message([
+                        "topic" => $dashboard_t->topic->topic_name,
+                        "date" => $date,
+                        "value" => $topic->value
+                    ])->publish();
                 }
             }
 
             $dashboard = $this->dashboardService->getData($dashboard->id);
+
+         
+
             if(NewPush::isRedisReady()){
                 NewPush::channel("MyChannel")
                 ->message(["response" => $dashboard])
@@ -186,5 +193,17 @@ class TopicsController extends Controller
         $this->mqtt->loop(true); */
 
         return response()->json($topics, 200);
+    }
+
+    public function topic($pin,$status)
+    {
+
+        return response()->json([$pin => $status]);
+    }
+
+    public function topic($pin,$status)
+    {
+        
+        return response()->json([$pin => $status]);
     }
 }
