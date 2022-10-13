@@ -201,7 +201,7 @@ class TopicsController extends Controller
         return response()->json([$pin => $status]);
     }
 
-    public function topic($pin,$status)
+    public function topic_($pin,$status)
     {
         
         return response()->json([$pin => $status]);

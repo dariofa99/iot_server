@@ -14,6 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('dashboard_charts', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->id();
             $table->string("cols");
             $table->foreignId('chart_id')

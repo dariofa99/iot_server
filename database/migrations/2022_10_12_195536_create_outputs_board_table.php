@@ -13,10 +13,18 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('outputs', function (Blueprint $table) {
+        Schema::create('outputs_board', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->id();
+            $table->string("output_name");
+            $table->string("gpio");
+            $table->boolean("status")->default(0);
+            $table->foreignId('board_id')
+            ->constrained('boards')
+            ->onUpdate('cascade')
+            ->onDelete('cascade'); 
             $table->timestamps();
-        });
+           });
     }
 
     /**
@@ -26,6 +34,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('outputs');
+        Schema::dropIfExists('outputs_board');
     }
 };

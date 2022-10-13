@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BoardsController;
 use App\Http\Controllers\DashboardChartsController;
 use App\Http\Controllers\DashboardChartTopicsController;
 use App\Http\Controllers\TopicsController;
@@ -27,6 +28,8 @@ Route::group(['prefix'=>'v1','namespace'=>'App\Http\Controllers'],function(){
     Route::resource('dashboard/charts', DashboardChartsController::class);
     Route::post('dashboard/sync/topic', [DashboardChartTopicsController::class,'syncTopic']);
     Route::apiResource('charts', ChartsController::class);
+    Route::apiResource('boards', BoardsController::class);
+    Route::post('boards/output/update/{id}', [BoardsController::class,'syncOutput']);
    
    // Route::get('unauthenticated', 'AuthController@refresh')->name('unauthenticated');
     

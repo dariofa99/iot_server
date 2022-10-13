@@ -14,10 +14,9 @@ return new class extends Migration
     public function up()
     {
         Schema::create('topics', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->id();
             $table->string("topic_name");
-           // $table->string("value");
-           
             $table->timestamps();
         });
     }

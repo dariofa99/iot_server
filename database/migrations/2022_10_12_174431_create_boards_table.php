@@ -14,7 +14,13 @@ return new class extends Migration
     public function up()
     {
         Schema::create('boards', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->id();
+            $table->string("board_name");
+            $table->foreignId('user_id')
+            ->constrained('users')
+            ->onUpdate('cascade')
+            ->onDelete('cascade'); 
             $table->timestamps();
         });
     }

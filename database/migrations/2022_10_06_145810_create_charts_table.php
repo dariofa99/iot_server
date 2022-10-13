@@ -14,9 +14,9 @@ return new class extends Migration
     public function up()
     {
         Schema::create('charts', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->id();
-            $table->string("chart_type");
-           
+            $table->string("chart_type");           
             $table->timestamps();
         });
     }
