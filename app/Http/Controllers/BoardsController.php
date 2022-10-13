@@ -81,13 +81,15 @@ class BoardsController extends Controller
        return response()->json($board,200);
     }
 
-    public function getOutput($board, $output)
+    public function getOutput($id)
     {
         //return response()->json($request->all(),200);
-       $board = Board::find($board);
-     //  $board->status = $request->status;
-       $board->save();
-       return response()->json($board,200);
+       $response = [];
+       $board = Board::find($id);
+       foreach ($board->outputs as $key => $out) {
+        $response[$out->gpio] = strval($out->status);
+       }
+       return response()->json($response,200);    
     }
 
     /**

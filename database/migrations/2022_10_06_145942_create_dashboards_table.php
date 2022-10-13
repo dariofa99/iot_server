@@ -16,7 +16,8 @@ return new class extends Migration
         Schema::create('dashboards', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->id();
-            $table->string("dashboard_name");         
+            $table->string("dashboard_name"); 
+            $table->string("token");         
             $table->foreignId('user_id')
             ->constrained('users')
             ->onUpdate('cascade')

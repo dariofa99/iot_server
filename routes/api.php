@@ -30,6 +30,10 @@ Route::group(['prefix'=>'v1','namespace'=>'App\Http\Controllers'],function(){
     Route::apiResource('charts', ChartsController::class);
     Route::apiResource('boards', BoardsController::class);
     Route::post('boards/output/update/{id}', [BoardsController::class,'syncOutput']);
+
+
+    Route::get('boards/output/{board}', [BoardsController::class,'getOutput']);
+
    
    // Route::get('unauthenticated', 'AuthController@refresh')->name('unauthenticated');
     

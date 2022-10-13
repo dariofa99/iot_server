@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use \Facades\App\Facades\Mqtt;
+//use \Facades\App\Facades\Mqtt;
 use App\Models\Topic;
 use \Facades\App\Facades\NewPush;
 use App\Models\User;
@@ -13,6 +13,7 @@ use App\Models\DashboardChartTopic;
 use App\Models\TopicValue;
 use App\Services\DashboardService;
 use Illuminate\Database\Eloquent\Builder;
+use PhpMqtt\Client\Facades\MQTT;
 
 class TopicsController extends Controller
 {
@@ -62,11 +63,12 @@ class TopicsController extends Controller
                         'value' => intval($request[$dashboard_t->topic->topic_name]),
                         'date' => $date
                     ]);
-                    Mqtt::topic($dashboard_t->topic->topic_name)->message([
+                    MQTT::publish($dashboard_t->topic->topic_name,json_encode([
                         "topic" => $dashboard_t->topic->topic_name,
                         "date" => $date,
-                        "value" => $topic->value
-                    ])->publish();
+                        "value" => intval($request[$dashboard_t->topic->topic_name])
+                    ])); 
+                    //MQTT::disconnect();
                 }
             }
 
@@ -179,25 +181,35 @@ class TopicsController extends Controller
             'color'=>"#ksjdjdj",
             'dashboard_chart_id'=>9,'topic_id'=>2
         ]); */
-        $topics = Mqtt::subscribe(function($topic){
-            echo "Hola".$topic;
-            DashboardChartTopic::create([
-                'color'=>"#ksjdjdj",
-                'dashboard_chart_id'=>9,'topic_id'=>2
-            ]);
-        });
-        
+        $mqtt = MQTT::connection();
+        $mqtt->subscribe('mgtic/temperatura', function (string $topic, string $message) {
+            NewPush::channel("MyChannelDelete")
+                ->message($message)
+                ->publish();
+            echo sprintf('Received QoS level 1 message on topic [%s]: %s', $topic, $message);
+          
+
+           // $mqtt->disconnect();
+        }, 0);
+       
+        //$mqtt->interrupt();
+        $mqtt->loop(true); 
+       // $mqtt->disconnect();
         /* $topics->mqtt->subscribe("mgtic/luz", function ($topic, $message) {
             printf("Received message on topic [%s]: %s\n", $topic, $message);
         }, 0);
         $this->mqtt->loop(true); */
 
-        return response()->json($topics, 200);
+        return response()->json([], 200);
     }
 
     public function topic($pin,$status)
     {
-
+       /*  $mqtt = MQTT::connection();
+        $mqtt->subscribe('mgtic/temperatura', function (string $topic, string $message) {
+            echo sprintf('Received QoS level 1 message on topic [%s]: %s', $topic, $message);
+        }, 1);
+        $mqtt->loop(true); */
         return response()->json([$pin => $status]);
     }
 

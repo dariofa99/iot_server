@@ -23,7 +23,7 @@ class Mqtt
 
     public function __construct()
     {
-        $this->server = 'localhost';
+        $this->server = '3.18.87.25';
         $this->port = 1883;
         $this->clientId = rand(5, 15);
         $this->username = 'mgtic';
