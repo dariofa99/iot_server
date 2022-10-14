@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Dashboard as MyDash;
+use App\Models\Dashboard;
 use \Facades\App\Facades\Mqtt;
 use App\Models\Topic;
 use \Facades\App\Facades\NewPush;
@@ -45,56 +46,10 @@ class DashboardsController extends Controller
      */
     public function store(Request $request)
     {
-       /* // return response()->json([$request->all()]);
-        $date =  date('Y-m-d H:i:s');
-        $request['date'] =  $date;
-
-
-        if(is_array($request->topic_name)){
-            if(is_array($request->value)){
-                foreach ($request->topic_name as $key => $topic) {
-                    $topic = Topic::create([
-                        'topic_name'=>$topic,
-                        'value'=>$request->value[$key],
-                        "date" => $date
-                    ]);
-                    Mqtt::topic($request->topic_name)->message([
-                        "topic" => $topic,
-                        "date" => $date,
-                        "value" => $request->value[$key]
-                    ])->publish();
-                }
-                NewPush::channel("MyChannel")
-                ->message([
-                    "response" => Topic::orderBy('created_at', 'desc')->get(),
-                    "topic" => $topic])
-                ->publish();
-                return response()->json($topic);
-            }else{
-                return response()->json(["error"=>"Value is not array"]);
-            }
-        }else{
-            if (!is_array($request->value) and !is_array($request->topic_name) and $request->value != "nan" and $request->value != "") {
-                $request["value"] = intval($request->value);
-                $topic = Topic::create($request->all());
-                Mqtt::topic($request->topic_name)->message([
-                    "topic" => $request->topic_name,
-                    "date" => $date,
-                    "value" => $request->value
-                ])->publish();
-                NewPush::channel("MyChannel")
-                    ->message([
-                        "response" => Topic::orderBy('created_at', 'desc')->get(),
-                        "topic" => $topic])
-                    ->publish();
-                return response()->json($topic);
-            }else{
-                return response()->json(["error"=>"Topic name or Value is not array"]);
-            }
-        }
-        */
-       
-        return response()->json(["error"=>"Value is not numeric"]);
+        $request['token'] = \Str::random(20);
+        $request['user_id'] = 1;
+        $dashboard = Dashboard::create($request->all());
+        return response()->json($dashboard,200);
     }
 
     /**
